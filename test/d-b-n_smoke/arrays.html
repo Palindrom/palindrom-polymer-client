@@ -161,13 +161,15 @@
                         ppclient.addEventListener('patch-applied', function listener(event) {
                             ppclient.removeEventListener('patch-applied', listener);
                             expect(event.type).to.equal('patch-applied'); // It's kinda stupid, isn't it?
-                            expect(document.querySelector("ul.primitive_people>li>span").innerHTML).to.equal("Homo erectus");
+                            // We expect the change to not propagate! see https://github.com/PuppetJs/puppet-polymer-client/issues/17
+                            expect(document.querySelectorAll("ul.primitive_people>li>span")[0].innerHTML).to.equal("Australopithecus");
+
+                            // If it worked following line would pass:
+                            //  expect(document.querySelectorAll("ul.primitive_people>li>span")[0].innerHTML).to.equal("Homo erectus");
                             done();
                         });
                         // change model
                         puppetChange(puppet, [operationObject('replace', '/primitive_people/0', 'Homo erectus')]);
-                        console.info('Fails in Polymer 1.2.4 due to https://github.com/Polymer/polymer/issues/3377');
-
                     });
                 });
                 describe('properties of array items,', function() {
@@ -421,7 +423,10 @@
                                 ppclient.removeEventListener('patch-applied', listener);
                                 setTimeout(function() {
                                     expect(document.querySelector("ul.primitive_splice_n_change>li").innerHTML).to.equal("A");
-                                    expect(document.querySelector("ul.primitive_splice_n_change>li:nth-child(2)").innerHTML).to.equal("K");
+                                    // We expect the change to not propagate! see https://github.com/PuppetJs/puppet-polymer-client/issues/17
+                                    expect(document.querySelector("ul.primitive_splice_n_change>li:nth-child(2)").innerHTML).to.equal("T");
+                                    // If it worked following line would pass:
+                                    //  expect(document.querySelector("ul.primitive_splice_n_change>li:nth-child(2)").innerHTML).to.equal("K");
                                     expect(document.querySelector("ul.primitive_splice_n_change>li:nth-child(3)").innerHTML).to.equal("B");
                                     done();
                                 }, 100);
@@ -429,8 +434,6 @@
                             // change model
                             puppetChange(puppet, [operationObject('replace', '/people_splice_n_change/1', 'K')]);
                         }, 100);
-                        console.info('Fails in Polymer 1.2.4 due to https://github.com/Polymer/polymer/issues/3377');
-
                     });
                 });
                 describe('nested array items,', function() {
