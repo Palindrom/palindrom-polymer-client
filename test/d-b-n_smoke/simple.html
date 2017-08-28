@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
     <!-- Importing Web Component's Polyfill -->
-    <script src="../../../webcomponentsjs/webcomponents.js"></script>
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../shared/helpers.html">
     <script src="../../../web-component-tester/browser.js"></script>
 
@@ -16,14 +16,17 @@
 <body>
 
     <palindrom-client remote-url="/palindrom" ref="simple" ping-interval-s="0"></palindrom-client>
-    <template is="dom-bind" id="simple">
-
-        <h4>Welcome to
-            <span>{{model.name}}</span>!</h4>
-        <template is="dom-if" if="{{model.name}}">
-            <span id="conditional"></span>
+    <dom-bind id="simple">
+        <template>
+            <h4>Welcome to
+                <span>{{model.name}}</span>!</h4>
+            <dom-if if="{{model.name}}">
+                <template>
+                    <span id="conditional"></span>
+                </template>
+            </dom-if>
         </template>
-    </template>
+    </dom-bind>
     <script>
         var model = {
             name: "Juicy"

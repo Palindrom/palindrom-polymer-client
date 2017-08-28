@@ -4,7 +4,7 @@
 <!-- <link rel="import" href="iron-request.html"> -->
 
 <!-- include Palindrom with dependencies -->
-<script src="../Palindrom/dist/palindrom-dom.min.js"></script>
+<script src="../Palindrom/dist/palindrom-dom.js"></script>
 
 <!--
 The Polymer version of `palindrom-client` element binds [Palindrom](https://github.com/Palindrom/Palindrom) with [Polymer's template binding](https://www.polymer-project.org/1.0/docs/devguide/templates.html).
@@ -420,35 +420,21 @@ All the changes from server are also received and propagated to your HTML.
                             }
                         } else {
                             switch (operation.op) {
-
                                 case 'add':
                                 case 'replace':
-                                    if (typeof operation.value === 'object') {
-                                        templateDomBind.notifyPath(polymerPath);
-                                    } else {
-                                        templateDomBind.notifyPath(polymerPath, operation.value, false);
-                                    }
+                                    templateDomBind.notifyPath(polymerPath);
                                     break;
                                 case 'remove':
                                     //console.warn('Polymer does not support unsetting properties https://github.com/Polymer/polymer/issues/2565');
                                     //console.warn('remove is translated to JSON incompatible set to `undefined`, as there is no remove method in Polymer.')
+                                    // setting to null is the only way to notify about removal in Polymer 2.x
+                                    templateDomBind.notifyPath(polymerPath, null, false);
                                     templateDomBind.notifyPath(polymerPath, undefined, false);
                                     break;
                             }
                         }
                     }
                 }
-            },
-            validateJSONPatch: function () {
-                console.info('inherit validateJSONPatch from fast-json-patch');
-            },
-            observeJSONPatch: function (obj, callback) {
-                this.palindromObserver = callback;
-                return callback;
-            },
-            unobserveJSONPatch: function () {
-                // FIXME this is dummy as hell
-                this.palindromObserver = noop;
             }
         };
 

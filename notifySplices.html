@@ -8,15 +8,19 @@
 
 <body>
 
-    <template is="dom-bind" id="arrays">
-        <ul class="people">
-            <template is="dom-repeat" items="{{organization.people}}">
-                <li>
-                    <span>{{item}}</span>
-                </li>
-            </template>
-        </ul>
-    </template>
+    <dom-bind id="arrays">
+        <template>
+            <ul class="people">
+                <dom-repeat items="{{organization.people}}">
+                    <template>
+                        <li>
+                            <span>{{item}}</span>
+                        </li>
+                    </template>
+                </dom-repeat>
+            </ul>
+        </template>
+    </dom-bind>
     <script>
         var model = {
             name: "Juicy",
@@ -28,7 +32,7 @@
         var domBind = document.getElementById("arrays");
         domBind.organization = model;
 
-        setTimeout(function(){
+        setTimeout(function () {
             var removed = model.people[0];
             model.people[0] = "Anna";
             domBind.notifySplices('organization.people', {

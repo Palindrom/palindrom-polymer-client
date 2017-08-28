@@ -18,37 +18,41 @@
 <body unresolved>
     <h1>Palindrom + Polymer</h1>
     <div class="horizontal-section-container">
-        <template is="dom-bind" id="app">
-            <palindrom-client auto obj="{{model}}" remote-url="/palindrom"></palindrom-client>
-            <template is="dom-if" if="{{!model}}" restamp>
-                <div>User data was not yet fetched from data</div>
-            </template>
-            <template is="dom-if" if="{{model}}" restamp>
+        <dom-bind id="app">
+            <template>
+                <palindrom-client auto obj="{{model}}" remote-url="/palindrom"></palindrom-client>
+                <dom-if if="{{!model}}" restamp>
+                    <template>
+                        <div>User data was not yet fetched from data</div>
+                    </template>
+                </dom-if>
+                <dom-if if="{{model}}" restamp>
+                    <template>
+                        <h4>Welcome
+                            <em>{{model.user.fullName}}</em>!</h4>
 
-                <h4>Welcome
-                    <em>{{model.user.fullName}}</em>!</h4>
-
-                <p>
-                    <label>First Name
+                        <p>
+                            <label>First Name
                         <input type="text" value="{{model.user.firstName$::input}}">
                     </label>
-                </p>
+                        </p>
 
-                <p>
-                    <label>Last Name
+                        <p>
+                            <label>Last Name
                         <input type="text" value="{{model.user.lastName$::change}}">
                     </label>
-                </p>
+                        </p>
 
-                <button value="{{model.user.resetNameClicked$::click}}" onclick="this.value = true">Replace with Newton!
+                        <button value="{{model.user.resetNameClicked$::click}}" onclick="this.value = true">Replace with Newton!
             </template>
-
+                </dom-if>
         </template>
+        </dom-bind>
     </div>
 
     <script>
         var app = document.querySelector('#app');
-        app.hasSubtitle = function(value) {
+        app.hasSubtitle = function (value) {
             return true;
         };
     </script>
