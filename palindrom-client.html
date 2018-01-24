@@ -6,7 +6,7 @@
 <!-- include Palindrom with dependencies -->
 <script src="../Palindrom/dist/palindrom-dom.min.js"></script>
 <!--
-The Polymer version of `palindrom-client` element binds [Palindrom](https://github.com/Palindrom/Palindrom) with [Polymer's template binding](https://www.polymer-project.org/1.0/docs/devguide/templates.html).
+The Polymer version of `palindrom-client` element binds [Palindrom](https://github.com/Palindrom/Palindrom) with [Polymer's template binding](https://www.polymer-project.org/2.0/docs/devguide/templates.html).
 That keeps your Polymer app, or just `dom-bind` template in sync with any server-side
 data-model using Palindrom & [JSON Patch](https://tools.ietf.org/html/rfc6902) flow.
 
@@ -238,7 +238,7 @@ All the changes from server are also received and propagated to your HTML.
             },
 
             /**
-             * assigns an instance of Palindrom according to given params, attaches it to .pupet property
+             * assigns an instance of Palindrom according to given params, attaches it to .palindrom property
              *
              */
             attached() {
@@ -278,8 +278,6 @@ All the changes from server are also received and propagated to your HTML.
                         this.onPatchApplied([{ op: 'replace', path: '', value: obj }], [{ removed: this.obj }])
                     }
                 });
-                /* backward compatibility */
-                this.puppet = this.palindrom;
                 this.network = this.palindrom.network;
                 this.morphUrl = this.palindrom.morphUrl.bind(this.palindrom);
             },
@@ -485,21 +483,8 @@ All the changes from server are also received and propagated to your HTML.
                         }
                     }
                 }
-            },
-            validateJSONPatch() {
-                console.info('inherit validateJSONPatch from fast-json-patch');
-            },
-            observeJSONPatch(obj, callback) {
-                this.palindromObserver = callback;
-                return callback;
-            },
-            unobserveJSONPatch() {
-                // FIXME this is dummy as hell
-                this.palindromObserver = noop;
             }
         };
-
-        function noop() { }
 
         function translateJSONPointerToPolymerPath(pointer) {
             return pointer.replace(/\//g, '.');
@@ -612,119 +597,6 @@ All the changes from server are also received and propagated to your HTML.
         </div>
     </template>
     <script>
-        var palindromClient = Object.assign({}, component);
-        palindromClient.is = "palindrom-client";
-        Polymer(palindromClient);
-    </script>
-</dom-module>
-
-<dom-module id="puppet-client">
-    <template>
-        <style>
-            .box-container {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 1000;
-            }
-
-            .box-container[hidden] {
-                display: none;
-            }
-
-            .box {
-                padding: 5px 5px;
-            }
-
-            .notice {
-                background-color: #fff4cc;
-                border-color: #ffe070;
-                color: #000;
-            }
-
-            .error {
-                background-color: #fee;
-                border: 1px solid #f9c1c1;
-                border-top: none;
-                color: #444;
-            }
-
-            .hourglass {
-                animation: rotateHG 2s cubic-bezier(.03, 1, 1, 0) infinite;
-                transform-origin: 50% 50%;
-                display: inline-block;
-                text-decoration: none!important;
-            }
-
-            @keyframes rotateHG {
-                100% {
-                    transform: rotate(360deg)
-                }
-            }
-
-            .tappable {
-                cursor: pointer;
-            }
-
-            .tappable span {
-                text-decoration: underline;
-            }
-        </style>
-        <div class="box-container" hidden$="{{!showReconnectingIn}}">
-            <div class="box notice tappable" on-tap="reconnectNow">
-                <strong>
-                    <span class="hourglass">⏳</span> Not connected.
-                </strong>
-                Connecting in {{reconnectionSeconds}}s...
-                <span>Retry now</span>
-            </div>
-        </div>
-        <div class="box-container" hidden$="{{!showReconnectingNow}}">
-            <div class="box notice">
-                <strong>
-                    <span class="hourglass">⏳</span> Connecting now...
-                </strong>
-            </div>
-        </div>
-        <div class="box-container" hidden$="{{!showConnectionError}}">
-            <div class="box error tappable">
-                <span class="hourglass">⏳</span> Connection error.</strong> See console for details.
-                <dom-if if="{{!devToolsOpen}}">
-                    <template>
-                        <a>
-                            Reloading page in {{reconnectionSeconds}}s...
-                            <span on-tap="cancelReloading">Do not reload</span> •
-                        </a>
-                    </template>
-                </dom-if>
-                <dom-if if="{{devToolsOpen}}">
-                    <template>
-                        <em>
-                            Will not reload because DevTools is open.
-                        </em>
-                    </template>
-                </dom-if>
-                <span on-tap="reload">Reload now</span>
-            </div>
-        </div>
-        <div class="box-container" hidden$="{{!showGenericError}}">
-            <div class="box error tappable" on-tap="reload">
-                <strong>⚠️ An error has occurred.</strong> See console for details.
-                <span>Click here to reload</span>
-            </div>
-        </div>
-    </template>
-    <script>
-        /* backward compatibility */
-        var puppetClient = Object.assign({}, component);
-        puppetClient.is = "puppet-client";
-        var originalAttached = puppetClient.attached;
-        puppetClient.attached = function () {
-            // no need to warn before 2.4
-            // console.warn('`puppet-client` has been renamed to `palindrom-client`, please update your markup, `puppet-client` will be removed soon');
-            originalAttached.call(this);
-        }
-        Polymer(puppetClient);
+        Polymer(component);
     </script>
 </dom-module>
