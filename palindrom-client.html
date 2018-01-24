@@ -122,8 +122,8 @@ All the changes from server are also received and propagated to your HTML.
     </template>
     <script>      
 
-        (function () {
-            'use strict';
+
+        ((() => {
             /*!
             devtools-detect
             Detect if DevTools is open
@@ -132,7 +132,7 @@ All the changes from server are also received and propagated to your HTML.
             MIT License
             */
             function isDevToolsOpen() {
-                var threshold = 160;
+                const threshold = 160;
                 // Starcounter DevTools
                 if (
                     typeof starcounterDebugAidListener !== 'undefined' &&
@@ -142,8 +142,8 @@ All the changes from server are also received and propagated to your HTML.
                     return true;
                 }
                 // Browser DevTools
-                var widthThreshold = window.outerWidth - window.innerWidth > threshold;
-                var heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
 
                 if (
                     !(heightThreshold && widthThreshold) &&
@@ -339,17 +339,17 @@ All the changes from server are also received and propagated to your HTML.
                  *
                  */
                 attached() {
-                    var whereToBind = this.getAttribute("ref");
-                    var listenTo = this.listenTo;
-                    var pingIntervalS = this.pingIntervalS / 1;
+                    const whereToBind = this.getAttribute("ref");
+                    let listenTo = this.listenTo;
+                    const pingIntervalS = this.pingIntervalS / 1;
 
                     if (listenTo) {
                         listenTo = typeof listenTo == "string" ? document.getElementById(listenTo) : listenTo;
                     }
                     this.palindrom = new PalindromDOM({
                         remoteUrl: this.remoteUrl,
-                        pingIntervalS: pingIntervalS,
-                        listenTo: listenTo,
+                        pingIntervalS,
+                        listenTo,
                         useWebSocket: this.useWebSocket,
                         debug: this.debug,
                         onLocalChange: this.onLocalChange.bind(this),
@@ -395,33 +395,33 @@ All the changes from server are also received and propagated to your HTML.
                 },
                 onLocalChange(patches) {
                     // todo #26
-                    this.propagateDomBind({ patches: patches, results: patches.map(function () { }) });
+                    this.propagateDomBind({ patches, results: patches.map(() => { }) });
                 },
                 onPatchReceived(data, url, method) {
                     this.fire("patchreceived", {
-                        data: data,
-                        url: url,
-                        method: method
+                        data,
+                        url,
+                        method
                     });
                 },
                 onPatchSent(data, url, method) {
                     this.fire("patchsent", {
-                        data: data,
-                        url: url,
-                        method: method
+                        data,
+                        url,
+                        method
                     });
                 },
-                onSocketStateChanged(state, url, data, code, reason) {
+                onSocketStateChanged(state, url, data, statusCode, reason) {
                     this.fire("socketstatechanged", {
-                        state: state,
-                        url: url,
-                        data: data,
-                        statusCode: code,
-                        reason: reason
+                        state,
+                        url,
+                        data,
+                        statusCode,
+                        reason
                     });
                 },
                 onConnectionError(palindromConnectionError) {
-                    var eventDetail = {
+                    const eventDetail = {
                         palindromConnectionError,
                         handled: false
                     };
@@ -453,8 +453,8 @@ All the changes from server are also received and propagated to your HTML.
                     console.error(error);
                 },
                 onReconnectionCountdown(milliseconds) {
-                    var eventDetail = {
-                        milliseconds: milliseconds,
+                    const eventDetail = {
+                        milliseconds,
                         handled: false
                     };
 
@@ -467,7 +467,7 @@ All the changes from server are also received and propagated to your HTML.
                     }
                 },
                 onReconnectionEnd() {
-                    var eventDetail = {
+                    const eventDetail = {
                         handled: false
                     };
                     this.fire("reconnection-end", eventDetail);
@@ -486,18 +486,19 @@ All the changes from server are also received and propagated to your HTML.
                     }));
                 },
                 notifyTemplateDomBind(tree, patchesAndResults, templateDomBind, polymerPathPrefix) {
-                    var operation, polymerPath;
-                    for (var operationNo = 0, len = patchesAndResults.patches.length; operationNo < len; operationNo++) {
+                    let operation;
+                    let polymerPath;
+                    for (let operationNo = 0, len = patchesAndResults.patches.length; operationNo < len; operationNo++) {
                         operation = patchesAndResults.patches[operationNo];
-                        var result = patchesAndResults.results[operationNo];
+                        const result = patchesAndResults.results[operationNo];
                         if (operation.path == "") {
                             //in case of root path, Polymer replaces the original obj, which detaches it from Palindrom
-                            var newSequence = { patches: [], results: [] };
-                            for (var prop in operation.value) {
+                            const newSequence = { patches: [], results: [] };
+                            for (const prop in operation.value) {
                                 if (operation.value.hasOwnProperty(prop)) {
                                     newSequence.patches.push({
                                         op: "add",
-                                        path: "/" + prop,
+                                        path: `/${prop}`,
                                         value: operation.value[prop]
                                     });
                                 }
@@ -514,11 +515,11 @@ All the changes from server are also received and propagated to your HTML.
                             console.warn("move, and copy operations are not supported yet.")
                         } else {
                             // for add and remove we need to check whether it's an array or not
-                            var lastSeparator = operation.path.lastIndexOf('/');
-                            var name = operation.path.substr(lastSeparator + 1);
-                            var parentsPolymerPath = polymerPathPrefix + translateJSONPointerToPolymerPath(operation.path.substring(0, lastSeparator));
+                            const lastSeparator = operation.path.lastIndexOf('/');
+                            let name = operation.path.substr(lastSeparator + 1);
+                            const parentsPolymerPath = polymerPathPrefix + translateJSONPointerToPolymerPath(operation.path.substring(0, lastSeparator));
 
-                            var parent = templateDomBind.get(parentsPolymerPath);
+                            const parent = templateDomBind.get(parentsPolymerPath);
                             if (Array.isArray(parent) && (name === '-' || isNormalInteger(name))) {
                                 switch (operation.op) {
                                     case 'add':
@@ -588,11 +589,11 @@ All the changes from server are also received and propagated to your HTML.
             }
 
             function isNormalInteger(str) {
-                var n = ~~Number(str);
+                const n = ~~Number(str);
                 return String(n) === str && n >= 0;
             }
 
             Polymer(component);
-        }());
+        })());
     </script>
 </dom-module>
